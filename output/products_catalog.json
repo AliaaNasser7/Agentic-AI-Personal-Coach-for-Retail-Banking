@@ -1,0 +1,56 @@
+[
+  {
+    "product_code": "CHEK",
+    "name": "Current Account",
+    "type": "Checking",
+    "expected_return": 0.0,
+    "min_amount": 0,
+    "duration_months": 0,
+    "description": "Everyday checking account with no minimum balance. Used for salary deposits and daily spending."
+  },
+  {
+    "product_code": "SAVS",
+    "name": "Regular Savings Account",
+    "type": "Savings",
+    "expected_return": 0.09,
+    "min_amount": 500,
+    "duration_months": 0,
+    "description": "Flexible savings account with instant withdrawal access and a modest annual return."
+  },
+  {
+    "product_code": "FIXD3",
+    "name": "3-Year Fixed Deposit Certificate",
+    "type": "Certificate",
+    "expected_return": 0.16,
+    "min_amount": 5000,
+    "duration_months": 36,
+    "description": "Fixed-term certificate locking funds for 3 years in exchange for a higher guaranteed annual return."
+  },
+  {
+    "product_code": "FIXD5",
+    "name": "5-Year Fixed Deposit Certificate",
+    "type": "Certificate",
+    "expected_return": 0.185,
+    "min_amount": 10000,
+    "duration_months": 60,
+    "description": "Longer-term certificate for customers who can commit funds for 5 years, offering the highest guaranteed return in this catalog."
+  },
+  {
+    "product_code": "HOUL",
+    "name": "Housing Loan",
+    "type": "Loan",
+    "expected_return": null,
+    "min_amount": 50000,
+    "duration_months": 120,
+    "description": "Long-term financing for home purchase or renovation."
+  },
+  {
+    "product_code": "AUTL",
+    "name": "Auto Loan",
+    "type": "Loan",
+    "expected_return": null,
+    "min_amount": 20000,
+    "duration_months": 48,
+    "description": "Financing for new or used vehicle purchases."
+  }
+]
