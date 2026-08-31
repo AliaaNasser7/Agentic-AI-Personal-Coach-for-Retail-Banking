@@ -1,8 +1,7 @@
 # Spending Agent → Coordinator Handoff
 
-**From:** [Your name] — Spending Agent
-**To:** Person 1 — Architecture & Orchestrator Lead
-**Status:** Ready to be wired into LangGraph 
+**From:** [Aliaa] , Spending Agent
+**To:** Ahella , Architecture & Orchestrator Lead
 
 ---
 
