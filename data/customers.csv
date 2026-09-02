@@ -1,0 +1,51 @@
+customer_id,name,age,job,marital_status,monthly_income,account_type,product_code
+CUSTE2483D,Allison Hill,39,Accountant,Single,27700.0,Current,CHEK
+CUST246E67,Noah Rhodes,59,Business Owner,Single,31000.0,Current,CHEK
+CUSTA09879,Angie Henderson,54,Engineer,Single,9200.0,Current+Savings,CHEK
+CUST2FE7E1,Daniel Wagner,36,Student,Married,28100.0,Current,SAVS
+CUSTC63A8C,Cristian Santos,49,Government Employee,Married,31800.0,Current,CHEK
+CUST473800,Connie Lawrence,28,Teacher,Married,13300.0,Current,SAVS
+CUST1CF577,Abigail Shaffer,60,Sales Rep,Single,18200.0,Current+Savings,SAVS
+CUST52E49C,Gina Moore,46,Teacher,Married,21600.0,Current+Savings,CHEK
+CUST71F708,Gabrielle Davis,58,Accountant,Single,27000.0,Current,SAVS
+CUST825C9D,Ryan Munoz,27,Accountant,Single,28500.0,Savings,SAVS
+CUST5A28E8,Monica Herrera,32,Government Employee,Married,15500.0,Current,SAVS
+CUST1F20C2,Jamie Arnold,60,Doctor,Single,28800.0,Current,CHEK
+CUST71E783,Lisa Hensley,57,Accountant,Married,21700.0,Current,SAVS
+CUSTC0E2A0,Michele Williams,42,Business Owner,Married,13800.0,Current,CHEK
+CUSTEBAC93,Dylan Miller,35,Student,Married,13200.0,Current+Savings,SAVS
+CUST07972B,Brian Ramirez,30,Accountant,Married,21600.0,Current+Savings,SAVS
+CUST247CF8,Holly Wood,45,Accountant,Single,25900.0,Current+Savings,SAVS
+CUST209159,Derek Zuniga,29,Doctor,Single,22800.0,Current+Savings,CHEK
+CUST78B23C,Lisa Jackson,46,Business Owner,Married,20400.0,Current+Savings,CHEK
+CUSTCC6448,Carla Gray,29,Freelancer,Married,14500.0,Current+Savings,CHEK
+CUSTFE16F7,Margaret Hawkins DDS,49,Doctor,Married,17600.0,Current,SAVS
+CUST7FAB0D,Patty Perez,54,Doctor,Single,38400.0,Current+Savings,SAVS
+CUST647766,Ethan Adams,31,Government Employee,Single,16100.0,Current+Savings,CHEK
+CUSTA4E617,Tommy Walter,60,Government Employee,Married,38400.0,Current,CHEK
+CUST244590,Matthew Foster,41,Accountant,Single,9800.0,Current,SAVS
+CUST78D97B,Judy Baker,27,Student,Single,35900.0,Current+Savings,CHEK
+CUSTBA612D,Justin Baker,52,Freelancer,Single,32000.0,Savings,CHEK
+CUST2BB24A,Stephanie Ross,35,Freelancer,Single,23900.0,Current+Savings,SAVS
+CUST745341,Zachary Hicks,50,Freelancer,Married,16600.0,Current,SAVS
+CUST49FDED,Anthony Rodriguez,43,Engineer,Single,14400.0,Current+Savings,CHEK
+CUST227A60,Rebecca Henderson,25,Accountant,Single,13500.0,Current,CHEK
+CUST788902,James Ferrell,54,Accountant,Married,35200.0,Current+Savings,CHEK
+CUST1EB859,Tricia Valencia,58,Student,Single,22500.0,Savings,CHEK
+CUST82BFDD,Nathan Maldonado,28,Teacher,Married,33500.0,Savings,CHEK
+CUST04F1D1,Debra Davidson,25,Teacher,Single,20400.0,Savings,SAVS
+CUST012A31,Jeffrey Chavez,37,Accountant,Single,30800.0,Current+Savings,CHEK
+CUST6C460D,Sherri Baker,33,Sales Rep,Married,21300.0,Current,SAVS
+CUST906438,Cassandra Gaines,50,Freelancer,Single,35700.0,Current,CHEK
+CUST299D9D,Elizabeth Fowler,27,Accountant,Single,28200.0,Savings,CHEK
+CUSTD00ECD,Brittany Farmer,47,Engineer,Single,22500.0,Savings,CHEK
+CUST61A288,Paula Moreno,38,Student,Married,6100.0,Savings,SAVS
+CUST84D12A,Fred Smith,31,Accountant,Married,29700.0,Current,SAVS
+CUST11F3A5,Sherry Decker,42,Engineer,Single,38900.0,Current+Savings,CHEK
+CUSTC38A3C,Anthony Humphrey,25,Freelancer,Single,22200.0,Current,CHEK
+CUST00E195,Angelica Tucker,37,Business Owner,Single,8300.0,Current+Savings,CHEK
+CUSTFFBD20,Philip Cannon,27,Business Owner,Married,14400.0,Savings,CHEK
+CUST9C094C,John Pierce,37,Sales Rep,Married,12900.0,Current,SAVS
+CUST8A117D,Shane Henderson,51,Government Employee,Single,28800.0,Current,SAVS
+CUSTD37AE3,Joshua Blair,26,Freelancer,Single,21600.0,Current+Savings,CHEK
+CUST0B8EBF,Eric Carney,26,Accountant,Married,15000.0,Savings,SAVS
