@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simulation Tab — Agentic Coach Mockup</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F6F8;
+    --surface:#FFFFFF;
+    --border:#E3E6EB;
+    --ink:#12213D;
+    --ink-soft:#5B6472;
+    --teal:#1F4E5F;
+    --teal-soft:#E8F0F1;
+    --gold:#B8862E;
+    --gold-soft:#FBF3E3;
+    --green:#2E7D5B;
+    --green-soft:#EAF5EF;
+    --red:#B5482F;
+    --red-soft:#FBEEEA;
+    --violet:#4A4E7C;
+    --violet-soft:#EEEEF5;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',sans-serif; padding:32px;
+  }
+  .wrap{max-width:1180px; margin:0 auto;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0;}
+  .num{font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+
+  /* tabs */
+  .tabs{display:flex; gap:4px; margin-bottom:22px; border-bottom:1px solid var(--border);}
+  .tab{
+    padding:10px 18px; font-size:14px; font-weight:600; color:var(--ink-soft);
+    border-bottom:2px solid transparent; cursor:default;
+  }
+  .tab.active{color:var(--teal); border-bottom-color:var(--teal);}
+
+  /* header row */
+  .header{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;}
+  .header h1{font-size:22px;}
+  .header p{margin:4px 0 0; color:var(--ink-soft); font-size:13px;}
+  .customer-pill{
+    background:var(--surface); border:1px solid var(--border); border-radius:999px;
+    padding:6px 14px; font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* stat strip */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px;}
+  .stat{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+  .stat .label{font-size:12px; color:var(--ink-soft); font-weight:500;}
+  .stat .value{font-size:22px; font-weight:600; margin-top:4px;}
+  .stat .sub{font-size:11px; color:var(--ink-soft); margin-top:2px;}
+
+  /* AI insight card */
+  .insight{
+    background:var(--gold-soft); border:1px solid #EBD9AE; border-radius:var(--radius);
+    padding:16px 20px; margin-bottom:20px; display:flex; gap:14px; align-items:flex-start;
+  }
+  .insight .icon{
+    width:26px; height:26px; border-radius:50%; background:var(--gold); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:700;
+  }
+  .insight .body{font-size:13.5px; line-height:1.6; color:#4A3B14;}
+  .insight .eyebrow{font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+
+  /* chart card */
+  .chart-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:20px;}
+  .chart-card .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .legend{display:flex; gap:16px; font-size:12px; color:var(--ink-soft);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%;}
+  canvas{max-height:260px;}
+
+  /* two-col */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;}
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+  .card h3{font-size:14.5px; margin-bottom:2px;}
+  .card .desc{font-size:12px; color:var(--ink-soft); margin-bottom:14px;}
+
+  /* goal cards */
+  .goal-row{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid var(--border);}
+  .goal-row:first-of-type{border-top:none;}
+  .goal-name{font-size:13.5px; font-weight:600;}
+  .goal-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .badge{font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px;}
+  .badge.ahead{background:var(--green-soft); color:var(--green);}
+  .badge.on-track{background:var(--teal-soft); color:var(--teal);}
+  .badge.behind{background:var(--red-soft); color:var(--red);}
+
+  /* scenario ranking */
+  .rank-row{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-top:1px solid var(--border);}
+  .rank-row:first-of-type{border-top:none;}
+  .rank-num{
+    width:20px; height:20px; border-radius:6px; background:var(--teal-soft); color:var(--teal);
+    font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-right:10px;
+  }
+  .rank-left{display:flex; align-items:center;}
+  .rank-label{font-size:13px; font-weight:500;}
+  .rank-gain{font-size:13px; font-weight:600; color:var(--green); font-family:'IBM Plex Mono',monospace;}
+
+  /* product toggle */
+  .seg{display:flex; background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:3px; width:fit-content; margin-bottom:14px;}
+  .seg button{
+    border:none; background:transparent; padding:6px 14px; font-size:12px; font-weight:600;
+    border-radius:999px; font-family:'Inter',sans-serif; color:var(--ink-soft); cursor:default;
+  }
+  .seg button.active{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.06);}
+  .product-row{border-top:1px solid var(--border); padding:12px 0;}
+  .product-row:first-of-type{border-top:none;}
+  .product-top{display:flex; justify-content:space-between; align-items:baseline;}
+  .product-name{font-size:13.5px; font-weight:600;}
+  .product-gain{font-size:13px; font-weight:600; color:var(--gold); font-family:'IBM Plex Mono',monospace;}
+  .product-meta{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
+  .lock-note{font-size:10.5px; color:var(--violet); background:var(--violet-soft); padding:3px 8px; border-radius:6px; display:inline-block; margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="tabs">
+    <div class="tab">Overview</div>
+    <div class="tab">Spending</div>
+    <div class="tab">Goals</div>
+    <div class="tab active">Simulation</div>
+  </div>
+
+  <div class="header">
+    <div>
+      <h1>Simulation</h1>
+      <p>Future projections, what-if scenarios, and where extra savings could grow</p>
+    </div>
+    <div class="customer-pill">CUSTTEST1</div>
+  </div>
+
+  <div class="insight">
+    <div class="icon">AI</div>
+    <div class="body">
+      <div class="eyebrow">This month's read</div>
+      You're earning about <b>15,000</b> per month and spending about <b>11,400</b>, leaving a net of <b>3,600</b>.
+      At this pace your balance reaches about <b>48,200</b> by December. Both your Vacation and Emergency Fund
+      goals are on track. Cutting Dining, Entertainment, Shopping, and Subscriptions by 15% each would add
+      <b>360</b>/month — reaching <b>50,360</b> instead.
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Current balance</div>
+      <div class="value num">26,600</div>
+      <div class="sub">as of Jun 15</div>
+    </div>
+    <div class="stat">
+      <div class="label">Avg monthly net</div>
+      <div class="value num">+3,600</div>
+      <div class="sub">income 15,000 · spend 11,400</div>
+    </div>
+    <div class="stat">
+      <div class="label">Projected in 6 months</div>
+      <div class="value num">48,200</div>
+      <div class="sub">at current pace</div>
+    </div>
+    <div class="stat">
+      <div class="label">Best scenario adds</div>
+      <div class="value num" style="color:var(--green)">+360<span style="font-size:13px;">/mo</span></div>
+      <div class="sub">→ 50,360 by Dec</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="top">
+      <h3 style="font-size:14.5px;">Balance projection</h3>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--teal);"></i>Current pace</span>
+        <span><i class="dot" style="background:var(--gold);"></i>Best scenario</span>
+      </div>
+    </div>
+    <canvas id="balanceChart"></canvas>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Goals</h3>
+      <div class="desc">Progress against your saving plan</div>
+
+      <div class="goal-row">
+        <div>
+          <div class="goal-name">Vacation</div>
+          <div class="goal-meta">9 months needed · 9 planned</div>
+        </div>
+        <div class="badge on-track">On track</div>
+      </div>
+      <div class="goal-row">
+        <div>
+          <div class="goal-name">Emergency Fund</div>
+          <div class="goal-meta">12 months needed · 12 planned</div>
+        </div>
+        <div class="badge on-track">On track</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Ways to free up cash</h3>
+      <div class="desc">Ranked by monthly gain</div>
+
+      <div class="rank-row">
+        <div class="rank-left"><span class="rank-num">1</span><span class="rank-label">Cut Dining, Entertainment, Shopping, Subscriptions 15% each</span></div>
+        <div class="rank-gain">+360/mo</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-left"><span class="rank-num">2</span><span class="rank-label">Cut Dining/Restaurants 30%</span></div>
+        <div class="rank-gain">+270/mo</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-left"><span class="rank-num">3</span><span class="rank-label">Cut Shopping 30%</span></div>
+        <div class="rank-gain">+225/mo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Where extra savings could grow</h3>
+    <div class="desc">Split by whether your money stays accessible</div>
+
+    <div class="seg">
+      <button class="active">Flexible</button>
+      <button>Locked (fixed-term)</button>
+    </div>
+
+    <div class="product-row">
+      <div class="product-top">
+        <div class="product-name">Regular Savings Account — lump sum 26,600</div>
+        <div class="product-gain">+1,220 interest</div>
+      </div>
+      <div class="product-meta">Final balance 27,820 after 6 months · no lock-in</div>
+    </div>
+    <div class="product-row">
+      <div class="product-top">
+        <div class="product-name">Regular Savings Account — 3,600/month</div>
+        <div class="product-gain">+574 interest</div>
+      </div>
+      <div class="product-meta">Final balance 22,174 after 6 months · no lock-in</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ctx = document.getElementById('balanceChart');
+const labels = ['Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const baseline = [26600, 30200, 33800, 37400, 41000, 44600, 48200];
+const scenario = [26600, null, null, null, null, null, 50360];
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Current pace',
+        data: baseline,
+        borderColor: '#1F4E5F',
+        backgroundColor: 'rgba(31,78,95,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        fill: true,
+        tension: 0.25,
+      },
+      {
+        label: 'Best scenario',
+        data: scenario,
+        borderColor: '#B8862E',
+        borderDash: [6,4],
+        borderWidth: 2,
+        pointRadius: 4,
+        spanGaps: true,
+        fill: false,
+        tension: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#EEF0F3' }, ticks: { font: { family: 'IBM Plex Mono', size: 11 }, callback: v => v.toLocaleString() } },
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 } } }
+    }
+  }
+});
+</script>
+</body>
+</html>
