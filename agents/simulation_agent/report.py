@@ -23,6 +23,9 @@ from .errors import SimulationAgentError
 
 
 def _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n):
+    if months_ahead < 1:
+        raise SimulationAgentError(f"months_ahead must be at least 1, got {months_ahead}")
+
     cash_flow = monthly_cash_flow(customer_id, transactions_df)
     baseline_projection = project_balance(customer_id, transactions_df, months_ahead)
     goals_result = goal_feasibility(customer_id, transactions_df, goals_df)
@@ -38,11 +41,35 @@ def _compute(customer_id, transactions_df, goals_df, products, months_ahead, top
     }
 
 
+def _to_native(obj):
+    """
+    Recursively converts numpy scalar types (int64, float64, bool_) to
+    native Python types. pandas operations (.mean(), .iloc[-1], etc.)
+    return numpy scalars even after round() - round() on a numpy float64
+    stays a numpy float64, it doesn't downcast. json.dumps() happens to
+    handle numpy.float64 (it's a float subclass) but raises TypeError on
+    numpy.int64 (it isn't an int subclass) - this was caught by testing a
+    customer whose balance_after column loaded as all-integer values,
+    where the very first field in the whole output crashed a plain
+    json.dumps() call. Centralizing the fix here (once, on the final
+    output) is safer than hunting every round()/aggregation call site
+    across forecasting.py, scenarios.py, and products.py.
+    """
+    if isinstance(obj, dict):
+        return {k: _to_native(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_to_native(v) for v in obj]
+    if hasattr(obj, "item"):  # numpy scalar (int64, float64, bool_, ...)
+        return obj.item()
+    return obj
+
+
 def build_simulation_output(customer_id, transactions_df, goals_df, products,
                              months_ahead=6, top_n=3, model=DEFAULT_MODEL, use_llm_polish=True):
     """
     THIS is the function other agents / the Coordinator should call.
-    Returns a single JSON-serializable dict: no prints, no side effects.
+    Returns a single JSON-serializable dict: no prints, no side effects,
+    no leftover numpy types (see _to_native).
 
     If customer_id has no transaction history, the underlying calls raise
     SimulationAgentError - caught here and converted into a small error
@@ -65,7 +92,7 @@ def build_simulation_output(customer_id, transactions_df, goals_df, products,
     output["customer_id"] = customer_id
     output["months_ahead"] = months_ahead
     output["insight_text"] = narrate_report(output, model=model, use_llm_polish=use_llm_polish)
-    return output
+    return _to_native(output)
 
 
 def run_full_simulation_report(customer_id, transactions_df, goals_df, products,
