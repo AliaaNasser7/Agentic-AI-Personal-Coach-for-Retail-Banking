@@ -91,6 +91,15 @@ def call_llm(prompt: str) -> str:
             "  2. Run: ollama pull llama3.1:8b\n"
             "  3. Run: ollama serve  (or just open the Ollama app)"
         )
+    except requests.exceptions.HTTPError as e:
+        # Ollama is reachable, but rejected the request because model isn't pulled locally yet (wrong/missing model name).
+        raise ConnectionError(
+            f"Ollama server responded with an error (HTTP {response.status_code}) "
+            f"while requesting model '{MODEL}'.\n"
+            f"This usually means the model isn't pulled locally yet. Run:\n"
+            f"  ollama pull {MODEL}\n"
+            f"Original error: {e}"
+        )
 
     data = response.json()
     return data["message"]["content"].strip()
