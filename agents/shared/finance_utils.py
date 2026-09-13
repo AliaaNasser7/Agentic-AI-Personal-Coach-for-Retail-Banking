@@ -29,6 +29,11 @@ def get_product(product_code, products):
     return next((p for p in products if p["product_code"] == product_code), None)
 
 
+def customer_exists(customer_id, transactions_df):
+    """True if this customer has at least one transaction on record."""
+    return (transactions_df["customer_id"] == customer_id).any()
+
+
 def monthly_cash_flow(customer_id, transactions_df):
     """Average income / spend / net per month for this customer."""
     cust_txns = transactions_df[transactions_df["customer_id"] == customer_id].copy()

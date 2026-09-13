@@ -42,7 +42,12 @@ def build_fact_sentences(report):
         )
 
     overall = report["goals"]["overall"]
-    if overall["status"] == "behind":
+    if overall["status"] == "no_goals_set":
+        sentences.append(
+            f"You haven't set any savings goals yet. With about {cf['avg_monthly_net']:,.0f} left over "
+            f"each month, you're in a good position to start one."
+        )
+    elif overall["status"] == "behind":
         sentences.append(
             f"Overall, you're saving {overall['avg_monthly_saved']:,.0f} per month toward your goals "
             f"but would need {overall['total_required_monthly']:,.0f} per month - "

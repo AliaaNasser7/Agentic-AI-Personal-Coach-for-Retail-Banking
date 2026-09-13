@@ -41,8 +41,23 @@ def goal_feasibility(customer_id, transactions_df, goals_df):
     """
     cust_goals = goals_df[goals_df["customer_id"] == customer_id]
     avg_saved = savings_rate(customer_id, transactions_df)
-
     goal_rows = list(cust_goals.iterrows())
+
+    if not goal_rows:
+        # No goals set yet - "on track" would be a false claim about
+        # something that doesn't exist. Use a distinct status so the
+        # narration layer can pivot to "here's what you could grow"
+        # instead of implying a goal is being met.
+        return {
+            "per_goal": [],
+            "overall": {
+                "avg_monthly_saved": round(avg_saved, 2),
+                "total_required_monthly": 0,
+                "status": "no_goals_set",
+                "monthly_shortfall": 0,
+            },
+        }
+
     total_required_monthly = sum(g["monthly_required"] for _, g in goal_rows)
 
     results = []
