@@ -6,7 +6,8 @@ Step 4b: try several candidate scenarios, rank by monthly cash-flow gain.
 """
 
 import pandas as pd
-from shared.finance_utils import monthly_cash_flow
+from shared.finance_utils import monthly_cash_flow, customer_exists
+from .errors import SimulationAgentError
 
 # Categories a customer can realistically choose to cut back on.
 # Excludes fixed/necessary categories like Rent, Utilities, Healthcare.
@@ -14,6 +15,9 @@ DISCRETIONARY_CATEGORIES = ["Dining/Restaurants", "Entertainment", "Shopping", "
 
 
 def simulate_scenario(customer_id, transactions_df, category_changes=None, months_ahead=6):
+    if not customer_exists(customer_id, transactions_df):
+        raise SimulationAgentError(f"Unknown customer_id: {customer_id!r} has no transaction history")
+
     category_changes = category_changes or {}
     cust_txns = transactions_df[transactions_df["customer_id"] == customer_id].copy()
 

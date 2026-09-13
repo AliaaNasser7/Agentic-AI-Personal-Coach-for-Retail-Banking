@@ -5,7 +5,8 @@ Step 5: simulate investing a single amount in a single product.
 Step 5b: try every eligible product, split by liquidity, rank each group.
 """
 
-from shared.finance_utils import monthly_cash_flow, get_product
+from shared.finance_utils import monthly_cash_flow, get_product, customer_exists
+from .errors import SimulationAgentError
 
 
 def simulate_product_investment(product_code, products, amount, months_ahead, contribution_type="lump_sum"):
@@ -71,6 +72,9 @@ def rank_product_options(customer_id, transactions_df, products, months_ahead=6,
     groups separate avoids a high-rate but 5-year-locked product silently
     outranking a same-day-access option in a single combined list.
     """
+    if not customer_exists(customer_id, transactions_df):
+        raise SimulationAgentError(f"Unknown customer_id: {customer_id!r} has no transaction history")
+
     real_cust_txns = transactions_df[transactions_df["customer_id"] == customer_id].sort_values("date")
     last_balance = real_cust_txns.iloc[-1]["balance_after"]
     avg_net = monthly_cash_flow(customer_id, transactions_df)["avg_monthly_net"]

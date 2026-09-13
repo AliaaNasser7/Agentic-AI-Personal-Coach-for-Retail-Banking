@@ -11,7 +11,15 @@ against real output and found to hallucinate a month count, misread a
 percentage, and invent a time horizon that wasn't in the data.
 """
 
+import os
 import requests
+
+# Which local model to use for narration polishing. Configurable via env
+# var so it's not hardcoded per-agent - Spending (llama3.1:8b) and Goals
+# (llama3.2) currently use different models than this agent's default;
+# worth the team agreeing on one model (or one env var name) before demo
+# so behavior is consistent and reproducible across agents.
+DEFAULT_MODEL = os.environ.get("SIMULATION_LLM_MODEL", "llama3")
 
 
 def build_fact_sentences(report):
@@ -96,7 +104,7 @@ def build_fact_sentences(report):
     return sentences
 
 
-def narrate_report(report, model="llama3", host="http://localhost:11434", use_llm_polish=True):
+def narrate_report(report, model=DEFAULT_MODEL, host="http://localhost:11434", use_llm_polish=True):
     """
     Builds the guaranteed-correct fact sentences first. Then, optionally,
     asks the LLM ONLY to smooth them into a flowing paragraph - explicitly

@@ -14,11 +14,12 @@ Two public functions:
                                   not meant to be called by other agents.
 """
 
-from shared.finance_utils import monthly_cash_flow, customer_exists
+from shared.finance_utils import monthly_cash_flow
 from .forecasting import project_balance, goal_feasibility
 from .scenarios import rank_scenarios
 from .products import rank_product_options
-from .narration import narrate_report
+from .narration import narrate_report, DEFAULT_MODEL
+from .errors import SimulationAgentError
 
 
 def _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n):
@@ -38,25 +39,27 @@ def _compute(customer_id, transactions_df, goals_df, products, months_ahead, top
 
 
 def build_simulation_output(customer_id, transactions_df, goals_df, products,
-                             months_ahead=6, top_n=3, model="llama3", use_llm_polish=True):
+                             months_ahead=6, top_n=3, model=DEFAULT_MODEL, use_llm_polish=True):
     """
     THIS is the function other agents / the Coordinator should call.
     Returns a single JSON-serializable dict: no prints, no side effects.
 
-    If customer_id has no transaction history, returns a small error dict
-    instead of raising - consistent with how simulate_product_investment
-    reports invalid input, and safer for an API-style caller that expects
-    a JSON response either way rather than a crash.
+    If customer_id has no transaction history, the underlying calls raise
+    SimulationAgentError - caught here and converted into a small error
+    dict instead, consistent with how simulate_product_investment reports
+    invalid input, and safer for an API-style caller that expects a JSON
+    response either way rather than a crash.
     """
-    if not customer_exists(customer_id, transactions_df):
+    try:
+        output = _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n)
+    except SimulationAgentError as e:
         return {
             "agent": "simulation",
             "schema_version": "1.0",
             "customer_id": customer_id,
-            "error": f"Unknown customer_id: {customer_id!r} has no transaction history",
+            "error": str(e),
         }
 
-    output = _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n)
     output["agent"] = "simulation"
     output["schema_version"] = "1.0"
     output["customer_id"] = customer_id
@@ -68,11 +71,12 @@ def build_simulation_output(customer_id, transactions_df, goals_df, products,
 def run_full_simulation_report(customer_id, transactions_df, goals_df, products,
                                 months_ahead=6, top_n=3):
     """Console-printing version, for local debugging/demos only."""
-    if not customer_exists(customer_id, transactions_df):
-        print(f"ERROR: unknown customer_id {customer_id!r} - no transaction history found.")
+    try:
+        r = _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n)
+    except SimulationAgentError as e:
+        print(f"ERROR: {e}")
         return None
 
-    r = _compute(customer_id, transactions_df, goals_df, products, months_ahead, top_n)
     cash_flow, baseline_projection = r["cash_flow"], r["baseline_projection"]
     goals_result, top_scenarios, top_products = r["goals"], r["top_scenarios"], r["top_products"]
 

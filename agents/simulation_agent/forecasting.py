@@ -6,10 +6,14 @@ shared.finance_utils rather than recomputing cash flow / savings rate.
 """
 
 import pandas as pd
-from shared.finance_utils import monthly_cash_flow, savings_rate
+from shared.finance_utils import monthly_cash_flow, savings_rate, customer_exists
+from .errors import SimulationAgentError
 
 
 def project_balance(customer_id, transactions_df, months_ahead=6):
+    if not customer_exists(customer_id, transactions_df):
+        raise SimulationAgentError(f"Unknown customer_id: {customer_id!r} has no transaction history")
+
     cust_txns = transactions_df[transactions_df["customer_id"] == customer_id].sort_values("date")
     last_balance = cust_txns.iloc[-1]["balance_after"]
     last_date = cust_txns.iloc[-1]["date"]

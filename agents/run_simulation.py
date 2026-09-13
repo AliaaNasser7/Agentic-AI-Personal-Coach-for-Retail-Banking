@@ -7,13 +7,12 @@ simulation_agent.build_simulation_output directly instead of running this.
 """
 
 import json
-from shared.finance_utils import load_data, load_products
+from shared.finance_utils import load_data
 from simulation_agent import build_simulation_output, run_full_simulation_report
 
 if __name__ == "__main__":
-    transactions, goals, _ = load_data("output")
-    products = load_products("output/products_catalog.json")
-    sample_customer = transactions["customer_id"].iloc[0]
+    customers, transactions, goals, products = load_data("output")
+    sample_customer = customers["customer_id"].iloc[0]
 
     # Human-readable console report (debugging / local demo)
     run_full_simulation_report(sample_customer, transactions, goals, products, months_ahead=6, top_n=3)
