@@ -25,6 +25,8 @@ project/
 │       ├── scenarios.py       # step 4 + 4b: what-if simulation + ranking
 │       ├── products.py        # step 5 + 5b: product simulation + ranking
 │       ├── narration.py       # step 6: fact-based summary, optional local-LLM polish
+│       ├── errors.py          # SimulationAgentError — raised by forecasting/scenarios/products
+│       │                      # on an unknown customer_id, caught by report.py
 │       └── report.py          # orchestrator — ties every module together
 ├── ui/
 │   └── simulation_tab_mockup.html   # static visual reference for the Simulation dashboard tab
@@ -56,6 +58,11 @@ For AI narration (optional but required to satisfy the project's "uses AI" requi
 ollama pull llama3
 ```
 
+Model used: `llama3` by default, overridable via the `SIMULATION_LLM_MODEL` environment
+variable (`export SIMULATION_LLM_MODEL=llama3.2`, for example). **Worth syncing with the
+team** — Spending Agent currently uses `llama3.1:8b` and Goals Agent uses `llama3.2`; three
+different models across the demo is worth a deliberate team decision, not an accident.
+
 ## Running it
 
 ```bash
@@ -69,10 +76,9 @@ running the script:
 
 ```python
 from simulation_agent import build_simulation_output
-from shared.finance_utils import load_data, load_products
+from shared.finance_utils import load_data
 
-transactions, goals, _ = load_data("output")
-products = load_products("output/products_catalog.json")
+customers, transactions, goals, products = load_data("output")
 output = build_simulation_output("CUST123", transactions, goals, products)
 ```
 
@@ -98,6 +104,14 @@ reimplementing its own version of "how much does this customer save per month."
 - **Math is deterministic, narration is not.** All financial figures come from plain pandas/Python. The LLM (`narrate_report`) is only ever handed already-correct sentences and told not to change any number in them — this was a deliberate fix after an earlier test run showed a local LLM hallucinating a month count, a percentage, and a time horizon when given raw numbers to describe freely. See `build_fact_sentences` for the guaranteed-correct fallback.
 - **Per-goal status is proportional, not independent.** `avg_saved` is one pool of money shared across all the customer's goals — `goal_feasibility` allocates it proportionally to each goal's own required amount, so per-goal badges never contradict the `overall` status (an earlier version checked each goal against the *full* savings amount independently, which could show every goal "ahead" while the combined total was actually short).
 - **Product ranking is split by liquidity**, not one merged list — a high-rate 5-year certificate should never silently outrank a same-day-access savings account just because it has a bigger raw interest number over the same simulated horizon.
+
+## Known edge cases (tested)
+
+| Input | Behavior |
+|---|---|
+| Unknown `customer_id` (no transaction history) | `project_balance`, `simulate_scenario`, and `rank_product_options` each raise `simulation_agent.errors.SimulationAgentError` directly (catchable by type, matching Alia's `SpendingAgentError` pattern). `build_simulation_output` catches it and returns `{"error": "..."}` instead — check for the `"error"` key before reading other fields. `run_full_simulation_report` catches it and prints, returning `None` |
+| Valid customer, zero goals in `goals.csv` | `goals.overall.status` is `"no_goals_set"` (not `"on track"` — that would be a false claim). `insight_text` pivots to highlighting their monthly surplus and the top savings-product options instead, since `top_scenarios`/`top_products` are computed regardless of whether goals exist |
+| Valid customer, one goal only | Works normally — proportional allocation with one goal just allocates 100% of `avg_saved` to it |
 
 ## JSON output contract
 
@@ -191,6 +205,7 @@ A real generated example lives at `output/simulation_output_sample.json` after r
 
 ## Open items for integration with the rest of the team
 
-- Confirm the Coordinator calls `build_simulation_output`, not `run_full_simulation_report` (the latter is print-only, for local debugging).
+- ~~Confirm the Coordinator calls `build_simulation_output`, not `run_full_simulation_report`~~ — **confirmed by the team.**
 - Confirm `schema_version` handling if this contract changes later — bump the string so the Recommendation Agent can detect a mismatch.
-- Decide with the Goals Agent owner whether `savings_rate` / proportional allocation logic should live in a shared `utils.py` both agents import, to avoid the two agents computing "how much is this customer saving" two different ways.
+- **Shared cash-flow math**: `monthly_cash_flow`/`savings_rate` now live in `agents/shared/finance_utils.py` and round to 2 decimals at the source (this fixed an observed rounding drift — `22557.92` vs `22557.923333...` for the same customer, computed independently by two agents). Aya's Spending Agent and Goals Agent should import from here rather than keep their own local versions, or the drift comes back.
+- **Model consistency**: this agent defaults to `llama3` (overridable via `SIMULATION_LLM_MODEL`). Spending uses `llama3.1:8b`, Goals uses `llama3.2`. Worth a team decision on whether to standardize before the demo, or explicitly note per-agent model choice is intentional.
