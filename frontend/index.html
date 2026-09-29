@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Recommendation — Personal Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14213D;
+    --ink-soft:#4A5568;
+    --paper:#F6F5F1;
+    --panel:#FFFFFF;
+    --accent:#146356;
+    --accent-soft:#E6EFEC;
+    --gold:#B8863B;
+    --gold-soft:#F5EDDD;
+    --danger:#A23B2E;
+    --danger-soft:#F6E9E6;
+    --line:#E4E1D6;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:'Source Serif 4',Georgia,serif;
+    font-weight:600;
+    margin:0 0 8px 0;
+    color:var(--ink);
+  }
+  .shell{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    min-height:100vh;
+  }
+  .sidebar{
+    background:var(--ink);
+    color:#F0EFEA;
+    padding:28px 22px;
+  }
+  .brand{
+    font-family:'Source Serif 4',serif;
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:2px;
+  }
+  .brand-sub{
+    font-size:12.5px;
+    color:#9FB0C9;
+    margin-bottom:28px;
+  }
+  .picker-label{
+    font-size:12px;
+    color:#9FB0C9;
+    margin-bottom:6px;
+  }
+  select{
+    width:100%;
+    padding:9px 10px;
+    border-radius:8px;
+    border:1px solid #33415C;
+    background:#1C2A47;
+    color:#F0EFEA;
+    font-size:14px;
+    margin-bottom:24px;
+  }
+  .nav-item{
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:14px;
+    color:#C7D2E3;
+    margin-bottom:4px;
+  }
+  .nav-item.active{
+    background:#1C2A47;
+    color:#fff;
+  }
+  main{
+    padding:36px 48px;
+    max-width:820px;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .summary-line{
+    font-size:16px;
+    color:var(--ink-soft);
+    margin-bottom:12px;
+    max-width:62ch;
+  }
+  .priority-badge{
+    display:inline-flex;
+    align-items:center;
+    font-size:12px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:999px;
+    border:1px solid;
+    margin-bottom:24px;
+    cursor:help;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px 26px;
+    margin-bottom:20px;
+  }
+  .rec-title{
+    font-size:19px;
+    margin-bottom:10px;
+  }
+  .rec-grid{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+  }
+  .rec-reason{
+    flex:1 1 auto;
+    min-width:0;
+    color:var(--ink-soft);
+    font-size:14.5px;
+    max-width:56ch;
+  }
+  .impact-box{
+    flex:0 0 200px;
+    background:var(--gold-soft);
+    border:1px solid #E3D2A8;
+    border-radius:8px;
+    padding:12px 16px;
+    text-align:right;
+  }
+  .impact-label{
+    font-size:11.5px;
+    color:#8A6420;
+    margin-bottom:2px;
+  }
+  .impact-value{
+    font-family:'Source Serif 4',serif;
+    font-size:18px;
+    color:#6B4C17;
+    font-weight:600;
+  }
+  .action-line{
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .action-line b{ color:var(--accent); }
+
+  .goal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+  }
+  .goal-name{ font-size:17px; }
+  .goal-status{
+    font-size:12.5px;
+    padding:3px 10px;
+    border-radius:100px;
+    font-weight:600;
+  }
+  .status-on{ background:var(--accent-soft); color:var(--accent); }
+  .status-off{ background:var(--danger-soft); color:var(--danger); }
+
+  .goal-numbers{
+    display:flex;
+    justify-content:space-between;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .progress-track{
+    height:8px;
+    background:var(--line);
+    border-radius:100px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:100px;
+  }
+  .goal-footnote{
+    margin-top:10px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  details{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    margin-bottom:20px;
+  }
+  summary{
+    cursor:pointer;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+    list-style:none;
+  }
+  summary::-webkit-details-marker{ display:none; }
+  summary::before{
+    content:"›";
+    display:inline-block;
+    margin-right:8px;
+    transition:transform .15s ease;
+  }
+  details[open] summary::before{ transform:rotate(90deg); }
+  .source-list{
+    margin-top:14px;
+    display:grid;
+    gap:10px;
+  }
+  .source-item{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    padding-left:14px;
+    border-left:2px solid var(--line);
+  }
+  .source-item b{ color:var(--ink); }
+
+  .ask-box{
+    display:flex;
+    gap:10px;
+    margin-top:8px;
+  }
+  .ask-box input{
+    flex:1;
+    padding:11px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    font-size:14px;
+    font-family:inherit;
+  }
+  .ask-box button{
+    padding:11px 18px;
+    border-radius:8px;
+    border:none;
+    background:var(--ink);
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .ask-box button:hover{ background:#1C2A47; }
+  .ask-answer{
+    margin-top:14px;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    display:none;
+  }
+
+  .state-panel{
+    padding:60px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .state-panel h3{ margin-bottom:8px; }
+  .spinner{
+    width:22px;height:22px;
+    border:2.5px solid var(--line);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    margin:0 auto 16px auto;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  #app-error, #app-empty, #app-insufficient{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">NBE Coach</div>
+    <div class="brand-sub">Agentic AI Personal Coach</div>
+
+    <div class="picker-label">Customer</div>
+    <select id="customer-select"></select>
+
+    <div class="nav-item active">Overview</div>
+    <div class="nav-item">Spending</div>
+    <div class="nav-item">Goals</div>
+    <div class="nav-item">Simulation</div>
+  </aside>
+
+  <main>
+    <div id="app-loading" class="state-panel">
+      <div class="spinner"></div>
+      <h3>Preparing your recommendation</h3>
+      <div>Reading spending, goals, and simulation results…</div>
+    </div>
+
+    <div id="app-error" class="state-panel">
+      <h3>Something went wrong</h3>
+      <div id="app-error-text">Could not load this customer's data.</div>
+    </div>
+
+    <div id="app-insufficient" class="state-panel">
+      <h3>Not enough information yet</h3>
+      <div>We don't have enough data on this customer to build a recommendation.</div>
+    </div>
+
+    <div id="app-content" style="display:none;">
+      <div class="eyebrow">Financial Recommendation</div>
+      <h1 id="customer-heading">—</h1>
+      <div class="summary-line" id="summary-line">—</div>
+      <div class="priority-badge" id="priority-badge" style="display:none;"></div>
+
+      <div id="recommendations-container"></div>
+
+      <div class="card" id="goal-impact-card" style="display:none;">
+        <div class="goal-header">
+          <div class="goal-name" id="goal-name">—</div>
+          <div class="goal-status" id="goal-status">—</div>
+        </div>
+        <div class="goal-numbers">
+          <span id="goal-current-label">Current pace: — SAR/month</span>
+          <span id="goal-target-label">Required: — SAR/month</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="goal-progress-fill" style="width:0%;"></div>
+        </div>
+        <div class="goal-footnote" id="goal-footnote"></div>
+        <div class="goal-footnote" style="margin-top:2px;color:#8a8578;">Bar shows current monthly savings pace as a share of what the goal requires — not the amount already saved.</div>
+      </div>
+
+      <details>
+        <summary>Why am I seeing this?</summary>
+        <div class="source-list" id="why-source-list"></div>
+      </details>
+
+      <div class="card">
+        <h3 style="font-size:15px;">Ask a follow-up question</h3>
+        <div class="ask-box">
+          <input id="ask-input" type="text" placeholder="e.g. How can I reach my goal faster?">
+          <button id="ask-button">Ask</button>
+        </div>
+        <div class="ask-answer" id="ask-answer"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function fmt(n){
+  if (n === null || n === undefined) return "N/A";
+  return Number(n).toLocaleString(undefined, {maximumFractionDigits: 0});
+}
+
+function showState(state){
+  ["app-loading","app-error","app-insufficient","app-content"].forEach(id=>{
+    $(id).style.display = (id === state) ? (id === "app-content" ? "block" : "flex") : "none";
+  });
+  if(state === "app-content") $(state).style.display = "block";
+  if(state === "app-loading") $(state).style.display = "block";
+}
+
+async function loadCustomers(){
+  const res = await fetch("/api/customers");
+  const customers = await res.json();
+  const select = $("customer-select");
+  select.innerHTML = "";
+  customers.forEach(c=>{
+    const opt = document.createElement("option");
+    opt.value = c.customer_id;
+    opt.textContent = `${c.name} (${c.customer_id})`;
+    select.appendChild(opt);
+  });
+  return customers;
+}
+
+function renderPriorityBadge(priority){
+  const el = $("priority-badge");
+  if(!priority){
+    el.style.display = "none";
+    return;
+  }
+  const colors = {High: "#c0392b", Medium: "#b7791f", Low: "#2f855a"};
+  el.style.display = "inline-flex";
+  el.style.background = (colors[priority.label] || "#666") + "1a";
+  el.style.color = colors[priority.label] || "#666";
+  el.style.borderColor = (colors[priority.label] || "#666") + "55";
+  el.textContent = `${priority.label} priority — ML score ${priority.score.toFixed(0)}/100`;
+  el.title = `Scored by a trained ${priority.model}, based on this customer's real spending, goal-gap, and saving-pace features.`;
+}
+
+function renderRecommendations(recs){
+  const container = $("recommendations-container");
+  container.innerHTML = "";
+  recs.forEach((rec, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="eyebrow">${i === 0 ? "Top Recommendation" : "Also Worth Noting"}</div>
+      <div class="rec-title">${rec.title}</div>
+      <div class="rec-grid">
+        <div class="rec-reason">${rec.reason}</div>
+        <div class="impact-box">
+          <div class="impact-label">Potential impact</div>
+          <div class="impact-value">${rec.estimated_impact}</div>
+        </div>
+      </div>
+      <div class="action-line"><b>Recommended action —</b> ${rec.action}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderGoalImpact(goalImpact){
+  const card = $("goal-impact-card");
+  if(!goalImpact){
+    card.style.display = "none";
+    return;
+  }
+  card.style.display = "block";
+  $("goal-name").textContent = goalImpact.goal_name;
+
+  const onTrack = goalImpact.on_track;
+  const statusEl = $("goal-status");
+  if(onTrack === null || onTrack === undefined){
+    statusEl.textContent = "Not projected";
+    statusEl.className = "goal-status";
+  } else if(onTrack){
+    statusEl.textContent = "On track";
+    statusEl.className = "goal-status status-on";
+  } else {
+    statusEl.textContent = "Behind pace";
+    statusEl.className = "goal-status status-off";
+  }
+
+  const projected = goalImpact.projected_months_to_reach;
+  $("goal-current-label").textContent = projected
+    ? `Current pace: ${fmt(goalImpact.current_monthly_pace)} SAR/month`
+    : "Current pace: not enough data";
+  $("goal-target-label").textContent =
+    `Required: ${fmt(goalImpact.monthly_required)} SAR/month`;
+
+  let pct = 0;
+  if(goalImpact.current_monthly_pace && goalImpact.monthly_required){
+    pct = Math.min(100, Math.round((goalImpact.current_monthly_pace / goalImpact.monthly_required) * 100));
+  }
+  $("goal-progress-fill").style.width = pct + "%";
+  $("goal-footnote").textContent = projected
+    ? `At this pace, reaching ${fmt(goalImpact.target_amount)} SAR would take about ${projected} months (target is ${goalImpact.duration_months} months).`
+    : "";
+}
+
+function renderWhySources(dashboard){
+  const list = $("why-source-list");
+  list.innerHTML = "";
+  const tabs = dashboard.tabs;
+
+  if(tabs.spending && !tabs.spending.error){
+    const s = tabs.spending;
+    const over = (s.overspending_categories && s.overspending_categories.length)
+      ? `Overspending flagged: ${s.overspending_categories[0].category} was ${s.overspending_categories[0].vs_avg_pct}% above average in ${s.overspending_categories[0].month}.`
+      : "No overspending categories flagged.";
+    list.innerHTML += `<div class="source-item"><b>Spending Agent —</b> avg income ${fmt(s.avg_monthly_income)}, avg spending ${fmt(s.avg_monthly_spending)}, monthly surplus ${fmt(s.monthly_surplus)}. ${over}</div>`;
+  }
+  if(tabs.goals && !tabs.goals.error){
+    const g = tabs.goals.primary_goal;
+    const gap = (g.status === "needs_action" && g.monthly_gap > 0)
+      ? ` This month's disposable income leaves a gap of ${fmt(g.monthly_gap)}/month${g.suggestions && g.suggestions.length ? `, with ${g.suggestions.length} installment option(s) found to help close it.` : "."}`
+      : " Disposable income this month already covers what it needs.";
+    list.innerHTML += `<div class="source-item"><b>Goals Agent —</b> "${g.goal_name}" goal: ${fmt(g.target_amount)} target over ${fmt(g.duration_months)} months (${fmt(g.monthly_required)}/month required).${gap}</div>`;
+  }
+  if(tabs.simulation && !tabs.simulation.error){
+    const sim = tabs.simulation;
+    list.innerHTML += `<div class="source-item"><b>Simulation Agent —</b> ${sim.insight_text || "No narrative available."}</div>`;
+  }
+}
+
+async function loadDashboard(customerId){
+  showState("app-loading");
+  try{
+    const res = await fetch(`/api/dashboard/${customerId}`);
+    if(!res.ok){
+      showState("app-error");
+      return;
+    }
+    const dashboard = await res.json();
+    const overview = dashboard.tabs.overview;
+
+    if(!overview.recommendations || overview.recommendations.length === 0){
+      showState("app-insufficient");
+      return;
+    }
+
+    $("customer-heading").textContent = dashboard.customer.name;
+    $("summary-line").textContent = overview.summary;
+    renderPriorityBadge(overview.priority);
+    renderRecommendations(overview.recommendations);
+    renderGoalImpact(overview.goal_impact);
+    renderWhySources(dashboard);
+
+    showState("app-content");
+  } catch(err){
+    $("app-error-text").textContent = err.message;
+    showState("app-error");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const customers = await loadCustomers();
+  const select = $("customer-select");
+  select.addEventListener("change", () => loadDashboard(select.value));
+  if(customers.length) loadDashboard(customers[0].customer_id);
+
+  $("ask-button").addEventListener("click", async () => {
+    const question = $("ask-input").value.trim();
+    if(!question) return;
+    const answerBox = $("ask-answer");
+    answerBox.style.display = "block";
+    answerBox.textContent = "Thinking…";
+    const res = await fetch("/api/ask", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({customer_id: select.value, question})
+    });
+    const data = await res.json();
+    if(data.answer && data.answer.summary){
+      answerBox.textContent = `${data.answer.summary} (Agents used: ${data.agents_used.join(", ")})`;
+    } else if(data.answer && data.answer.coach_message){
+      answerBox.textContent = data.answer.coach_message;
+    } else {
+      answerBox.textContent = "No answer available.";
+    }
+  });
+});
+</script>
+
+</body>
+</html>
