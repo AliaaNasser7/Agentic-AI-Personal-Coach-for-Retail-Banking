@@ -1,5 +1,0 @@
-pandas
-flask
-requests
-scikit-learn
-joblib
