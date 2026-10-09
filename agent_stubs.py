@@ -1,9 +1,10 @@
-from contracts import EXAMPLE_RECOMMENDATION_OUTPUT
+
 from shared.finance_utils import load_data, load_products
 from simulation_agent import build_simulation_output
 from goal_agent import GoalAgent, GoalAgentConfig
 from spending_agent_local import generate_coach_message
 from spending_agent_tools import analyze_customer, SpendingAgentError
+from recommendation_agent import run_recommendation_agent as _run_recommendation_agent
 import spending_agent_tools
 import requests
 from pathlib import Path
@@ -98,6 +99,25 @@ def run_simulation_agent(customer_id, spending_output=None, goals_output=None):
         return {"error": f"Simulation Agent failed to initialize: {_sim_init_error}",
                 "analyzed_by": "Simulation Agent"}
 
+
+try:
+    _loaded = load_data(str(DATA_DIR))
+    if len(_loaded) == 4:   # newer: customers, transactions, goals, products
+        _, _sim_transactions, _sim_goals, _ = _loaded
+    else:                   # older: transactions, goals, products
+        _sim_transactions, _sim_goals, _ = _loaded
+    _sim_products = load_products(str(DATA_DIR / "products_catalog.json"))
+    _sim_init_error = None
+except Exception as e:
+    _sim_transactions = _sim_goals = _sim_products = None
+    _sim_init_error = str(e)
+
+
+def run_simulation_agent(customer_id, spending_output=None, goals_output=None):
+    if _sim_init_error is not None:
+        return {"error": f"Simulation Agent failed to initialize: {_sim_init_error}",
+                "analyzed_by": "Simulation Agent"}
+
     try:
         return build_simulation_output(
             customer_id, _sim_transactions, _sim_goals, _sim_products,
@@ -107,5 +127,20 @@ def run_simulation_agent(customer_id, spending_output=None, goals_output=None):
         return {"error": f"Simulation failed for this customer: {e}", "analyzed_by": "Simulation Agent"}
 
 
+def _none_if_error(agent_output):
+    """The Recommendation Agent expects None for an agent that failed,
+    not an {'error': ...} dict."""
+    if agent_output is None or "error" in agent_output:
+        return None
+    return agent_output
+
+
 def run_recommendation_agent(spending_output, goals_output, simulation_output):
-    return EXAMPLE_RECOMMENDATION_OUTPUT
+    try:
+        return _run_recommendation_agent(
+            _none_if_error(spending_output),
+            _none_if_error(goals_output),
+            _none_if_error(simulation_output),
+        )
+    except Exception as e:
+        return {"error": f"Recommendation failed: {e}", "analyzed_by": "Recommendation Agent"}
