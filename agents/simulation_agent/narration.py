@@ -19,7 +19,7 @@ import requests
 # (llama3.2) currently use different models than this agent's default;
 # worth the team agreeing on one model (or one env var name) before demo
 # so behavior is consistent and reproducible across agents.
-DEFAULT_MODEL = os.environ.get("SIMULATION_LLM_MODEL", "llama3")
+DEFAULT_MODEL = os.environ.get("SIMULATION_LLM_MODEL", "llama3.1:8b")
 
 
 def build_fact_sentences(report):
