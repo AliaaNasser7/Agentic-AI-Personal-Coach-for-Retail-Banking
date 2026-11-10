@@ -55,7 +55,7 @@ For AI narration (optional but required to satisfy the project's "uses AI" requi
 
 ```bash
 # install Ollama from ollama.com, then:
-ollama pull llama3
+ollama pull llama3.1:8b
 ```
 
 Model used: `llama3` by default, overridable via the `SIMULATION_LLM_MODEL` environment
@@ -67,7 +67,7 @@ different models across the demo is worth a deliberate team decision, not an acc
 
 ```bash
 cd data && python generate_data.py        # creates ../output/*.csv and products_catalog.json
-cd ../agents && python run_simulation.py  # runs the full pipeline, prints a report,
+cd ../Simulation_agent && python -m run_simulation.py  # runs the full pipeline, prints a report,
                                            # writes output/simulation_output_sample.json
 ```
 
