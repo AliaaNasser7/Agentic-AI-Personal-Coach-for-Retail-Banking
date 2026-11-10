@@ -8,7 +8,7 @@ simulation_agent.build_simulation_output directly instead of running this.
 
 import json
 from shared.finance_utils import load_data
-from simulation_agent import build_simulation_output, run_full_simulation_report
+from Simulation_agent.agent_logic import build_simulation_output, run_full_simulation_report
 
 if __name__ == "__main__":
     customers, transactions, goals, products = load_data("output")
