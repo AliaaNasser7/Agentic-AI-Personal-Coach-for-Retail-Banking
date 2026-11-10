@@ -64,7 +64,7 @@ different models across the demo is worth a deliberate team decision, not an acc
 ## Running it
 
 ```bash
-cd data && python generate_data.py        # creates ../output/*.csv and products_catalog.json
+#cd data && python generate_data.py        # creates ../output/*.csv and products_catalog.json
 cd ../Simulation_agent && python -m run_simulation.py  # runs the full pipeline, prints a report,
                                            # writes output/simulation_output_sample.json
 ```
