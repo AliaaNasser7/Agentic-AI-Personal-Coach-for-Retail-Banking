@@ -12,26 +12,24 @@ local LLM via [Ollama](https://ollama.com).
 
 ```
 project/
-├── data/
-│   └── generate_data.py       # synthetic dataset generator (customers/transactions/goals/products)
-├── agents/
-│   ├── run_simulation.py      # local entry point — run this to test/demo
-│   ├── shared/
-│   │   └── finance_utils.py   # cash-flow + savings-rate math — import this from OTHER agents too
-│   │                          # (e.g. the Goals Agent), don't recompute it locally
-│   └── simulation_agent/      # the Simulation Agent, split by concern
-│       ├── __init__.py        # exposes build_simulation_output, run_full_simulation_report
-│       ├── forecasting.py     # step 2 + 3: balance projection, goal feasibility
-│       ├── scenarios.py       # step 4 + 4b: what-if simulation + ranking
-│       ├── products.py        # step 5 + 5b: product simulation + ranking
-│       ├── narration.py       # step 6: fact-based summary, optional local-LLM polish
-│       ├── errors.py          # SimulationAgentError — raised by forecasting/scenarios/products
-│       │                      # on an unknown customer_id, caught by report.py
-│       └── report.py          # orchestrator — ties every module together
-├── ui/
-│   └── simulation_tab_mockup.html   # static visual reference for the Simulation dashboard tab
-├── docs/
-│   └── README.md              # this file
+│
+├── shared/
+│     └── finance_utils.py    # cash-flow + savings-rate math — import this from OTHER agents too
+│                              # (e.g. the Goals Agent), don't recompute it locally
+├── simulation_agent/          # the Simulation Agent, split by concern
+│       ├── agent_logic/
+│       │       ├── __init__.py        # exposes build_simulation_output, run_full_simulation_report
+│       │       ├── forecasting.py     # step 2 + 3: balance projection, goal feasibility
+│       │       ├── scenarios.py       # step 4 + 4b: what-if simulation + ranking
+│       │       ├── products.py        # step 5 + 5b: product simulation + ranking
+│       │       ├── narration.py       # step 6: fact-based summary, optional local-LLM polish
+│       │       ├── errors.py          # SimulationAgentError — raised by forecasting/scenarios/products
+│       │       │                      # on an unknown customer_id, caught by report.py
+│       │       └── report.py          # orchestrator — ties every module together
+│       │
+│       ├── run_simulation.py  # local entry point — run this to test/demo
+│       └── docs/
+│             └── README.md              # this file
 └── output/                    # generated at runtime — CSVs, catalog JSON, sample output
     ├── customers.csv
     ├── transactions.csv
