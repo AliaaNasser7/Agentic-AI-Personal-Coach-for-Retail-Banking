@@ -2,9 +2,9 @@ import os
 import pandas as pd
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TRANSACTIONS_PATH = os.path.join(_BASE_DIR, "output", "transactions.csv")
-CUSTOMERS_PATH = os.path.join(_BASE_DIR, "output", "customers.csv")
-
+_DATA_DIR = os.path.join(_BASE_DIR, "..", "output")
+TRANSACTIONS_PATH = os.path.normpath(os.path.join(_DATA_DIR, "transactions.csv"))
+CUSTOMERS_PATH = os.path.normpath(os.path.join(_DATA_DIR, "customers.csv"))
 
 class SpendingAgentError(Exception):
     """Raised for any Spending Agent data/lookup problem (missing customer,
@@ -16,7 +16,7 @@ def _load_transactions():
     if not os.path.exists(TRANSACTIONS_PATH):
         raise SpendingAgentError(
             f"transactions.csv not found at {TRANSACTIONS_PATH}. "
-            f"Make sure it's in the same folder as this script, or re-run generate_all_data.py."
+            f"Make sure it's in the project's output/ folder, or re-run data.py."
         )
     try:
         df = pd.read_csv(TRANSACTIONS_PATH, parse_dates=["date"])
@@ -34,7 +34,7 @@ def _load_customers():
     if not os.path.exists(CUSTOMERS_PATH):
         raise SpendingAgentError(
             f"customers.csv not found at {CUSTOMERS_PATH}. "
-            f"Make sure it's in the same folder as this script, or re-run generate_all_data.py."
+            f"Make sure it's in the project's output/ folder, or re-run data.py."
         )
     try:
         return pd.read_csv(CUSTOMERS_PATH)
