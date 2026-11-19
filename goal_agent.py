@@ -99,7 +99,7 @@ class GoalAgentConfig:
     use_llm_message: bool = False
     ollama_url: str = "http://localhost:11434/api/generate"
     ollama_model: str = "llama3.2"  # change to whatever model you `ollama pull`ed
-    ollama_timeout_seconds: int = 30
+    ollama_timeout_seconds: int = 300
 
 
 @dataclass
@@ -471,7 +471,7 @@ class GoalAgent:
         surrounding whitespace.
         """
         text = text.strip()
-        quote_pairs = [('"', '"'), ("'", "'"), (""", """), (""", """)]
+        quote_pairs = [('"', '"'), ("'", "'"), ("\u201c", "\u201d"), ("\u2018", "\u2019")]
         for open_q, close_q in quote_pairs:
             if text.startswith(open_q) and text.endswith(close_q) and len(text) > 1:
                 text = text[1:-1].strip()
@@ -502,7 +502,13 @@ class GoalAgent:
 if __name__ == "__main__":
     import sys
 
-    args = [a for a in sys.argv[1:] if a != "--message"]
+    # Ignore Jupyter/Colab's injected "-f <kernel.json>" so it is never
+    # mistaken for a customer_id.
+    raw = sys.argv[1:]
+    if "-f" in raw:
+        i = raw.index("-f")
+        raw = raw[:i] + raw[i + 2:]
+    args = [a for a in raw if a != "--message"]
 
     # Always try to use the local Llama model when running this file
     # directly. If Ollama isn't running, the agent still works fine -
